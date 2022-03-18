@@ -1,0 +1,266 @@
+---
+title: 'Handeling and exploring data'
+author: "Jens Roeser"
+output: 
+  ioslides_presentation:
+    incremental: false
+    transition: slower
+    css: slides.css
+#runtime: shiny
+bibliography      : ["refs/references.bib"]
+---
+
+<style>
+.forceBreak { -webkit-column-break-after: always; break-after: column; }
+
+div.footnotes {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  width: 80%;
+  font-size: 0.6em;
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('slide:not(.backdrop):not(.title-slide)').append('<div class=\"footnotes\">');
+
+    $('footnote').each(function(index) {
+      var text  = $(this).html();
+      var fnNum = (index+1).toString().sup();
+      $(this).html(text + fnNum);
+
+      var footnote   = fnNum + ' ' + $(this).attr('content') + '<br/>';
+      var oldContent = $(this).parents('slide').children('div.footnotes').html();
+      var newContent = oldContent + footnote;
+      $(this).parents('slide').children('div.footnotes').html(newContent);
+    });
+  });
+</script>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment=NA)
+options("kableExtra.html.bsTable" = T)
+library(shiny)
+library(tidyverse)
+library(psyntur)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+```
+
+
+## Overview 
+
+1. Data wrangling
+2. Data visualisation
+3. Shiny apps
+
+
+## Why should I care?
+
+Why using R to handle data?
+
+- Reduce human factor
+- Reduce manual work
+- Reproducibility
+- Flexibility
+- Speed
+- Importance: > 70 to 80% of data analysis is data wrangling
+- Open source
+- Large community of friendly peer support
+
+## Rules!
+
+- Never change your data manually, always use code.
+  - Documenting changes when running analysis again
+  - Undoing changes if you change your mind
+  - Reproducibility
+- Organized working environment
+  - .Rproj
+  - Folder per project with sub-directories for scripts, data, plots, etc
+  - Short scripts
+- Less code is always better.
+- Avoid for-loops, if you can.
+- Comment your code (`# Je suis un comment!`)
+- Use `tidyverse` instead of base R.
+
+
+## Download repository
+
+- [https://github.com/jensroes/prowrite-data-workshop](https://github.com/jensroes/prowrite-data-workshop)
+
+
+## Data wrangling: goals
+
+- Make data suitable to use: e.g. for a statistical model, viz, summary table
+- Reveal information
+- Summarise information
+- Calculate variables
+- Data come in many formats
+
+
+## `tidyverse` {.columns-2}
+
+- Not just any R package
+- Collection of R packages for data science that share
+  - common data philosophies
+  - grammar
+  - data structures
+  - best practice
+  - designed to work together
+
+```{r eval = F, echo = T}
+# Installs 19 packages
+install.packages("tidyverse")
+```
+
+```{r eval = F, echo = T}
+# Loads 6 packages
+library(tidyverse)
+```
+
+
+
+<p class="forceBreak"></p>
+```{r fig.align='right', out.width="100%"}
+knitr::include_graphics("gfx/tidyverse-logo.png")
+```
+
+
+
+## `tidyverse`
+
+
+```{r fig.align='right', out.width="100%"}
+knitr::include_graphics("gfx/tidyverse-package-workflow.png")
+```
+
+## tbls (tibble)
+
+- Type of data structure
+- Looks better in the console
+
+```{r echo = T, eval = F}
+
+# Imports data as data frame
+read.csv()
+
+# Imports data as tbl
+read_csv()
+
+```
+
+
+## tidy data 
+
+```{r fig.align='right', out.width="80%"}
+knitr::include_graphics("gfx/tidy_1.png")
+```
+
+- Each variable must have its own column.
+- Each observation must have its own row.
+- Each value have its own cell.
+
+Why?
+- Consistent data structure allows easier learning of related tools because they have similar underpinning principles.
+- Placing variables in columns takes advantage of R's vectorised nature.    
+
+## `tidyverse`: verbs
+
+- Must know: `read_csv`, `write_csv`, `glimpse`, `select`, `rename`, `filter`, `mutate`, `group_by` / `ungroup`, `summarise`, `pivot_wider` / `pivot_longer`, `_join`, `bind_rows` / `bind_cols`
+
+- Also important: `count`, `pull`, `slice`, `across`, `recode`, `unique`, `n()`, `where`, `everything()`, `~` + `.`, `map`, `starts_with`, `ends_with`, `contains`, `separate`, `unite`, `transmute`
+
+- There are a lot more but these are fundamental.
+
+## The pipe: `%>%` {.columns-2}
+
+- `%>%` moves or "pipes" the result forward into the next function  
+- `f(x)` is the same as `x %>% f()`  
+
+```{r echo = T, eval = F}
+select(data, myvar1, myvar2)
+# or
+data %>% select(myvar1, myvar2)
+```
+
+*assumes first argument is data
+
+
+
+<p class="forceBreak"></p>
+
+```{r fig.align='right', out.width="80%"}
+knitr::include_graphics("gfx/pipe.png")
+```
+
+
+## The pipe: `%>%` {.columns-3}
+
+Instead of 
+
+
+```{r echo = T, eval = F}
+data_1 <- first_step(data)
+data_2 <- second_step(data)
+data_fin <- third_step(data)
+data_fin_v2 <- fourth_step(data)
+```
+
+
+<p class="forceBreak"></p>
+
+or
+
+```{r echo = T, eval = F}
+data_fin <- first_step(
+                  second_step(
+                    third_step(
+                      fourth_step(data)
+                    )
+                  )
+                )
+```
+
+<p class="forceBreak"></p>
+
+Just do
+
+```{r echo = T, eval = F}
+data_fin <- data %>% 
+  first_step() %>%
+  second_step() %>%
+  third_step() %>%
+  fourth_step()
+```
+
+
+
+## Recommended reading {.columns-2}
+
+- *R for Data Science* by Wickham and Grolemund
+- This link [r4ds.had.co.nz/](https://r4ds.had.co.nz/)
+
+<p class="forceBreak"></p>
+
+```{r fig.align='right', out.width="80%"}
+knitr::include_graphics("gfx/wickham.jpg")
+```
+
+
+
+```{r eval = F}
+## References
+<style>
+slides > slide { overflow: scroll; }
+slides > slide:not(.nobackground):after {
+  content: '';
+}
+</style>
+```
+
+
