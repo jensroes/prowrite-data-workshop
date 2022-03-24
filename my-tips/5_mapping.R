@@ -29,3 +29,6 @@ data <- map_dfr(files, read_csv) %>%
 # -do not use group_by but map, add a column to data that shows the mean of 
 # all rows that are *not* is_prod == TRUE by participant.
 
+
+# How do I get to keep the new data?
+write_csv(data, "data/newdata.csv")
