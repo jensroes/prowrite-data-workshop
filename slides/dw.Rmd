@@ -53,40 +53,29 @@ library(patchwork)
 ```
 
 
-## Overview 
-
-1. Data wrangling
-2. Data visualisation
-3. Shiny apps
-
-
 ## Why should I care?
 
-Why using R to handle data?
+Why using R (or code in general) to handle data?
 
 - Reduce human factor
 - Reduce manual work
 - Reproducibility
 - Flexibility
 - Speed
-- Importance: > 70 to 80% of data analysis is data wrangling
+- > 70 to 80% of data analysis is data wrangling
 - Open source
 - Large community of friendly peer support
 
 ## Rules!
 
-- Never change your data manually, always use code.
-  - Documenting changes when running analysis again
-  - Undoing changes if you change your mind
+- Never change your data manually, document everything in code.
+  - Making changes.
   - Reproducibility
 - Organized working environment
-  - .Rproj
-  - Folder per project with sub-directories for scripts, data, plots, etc
-  - Short scripts
-- Less code is always better.
-- Avoid for-loops, if you can.
+  - .Rproj with folder per project with sub-directories for scripts, data, plots, etc
+  - Short scripts: less code is always better.
 - Comment your code (`# Je suis un comment!`)
-- Use `tidyverse` instead of base R.
+- If possible, use `tidyverse` instead of base R.
 
 
 ## Download repository
@@ -105,13 +94,13 @@ Why using R to handle data?
 
 ## `tidyverse` {.columns-2}
 
-- Not just any R package
-- Collection of R packages for data science that share
-  - common data philosophies
-  - grammar
-  - data structures
-  - best practice
-  - designed to work together
+Collection of R packages for data science that share:
+
+- common data philosophies
+- grammar
+- data structures
+- best practice
+- designed to work together
 
 ```{r eval = F, echo = T}
 # Installs 19 packages
@@ -126,7 +115,7 @@ library(tidyverse)
 
 
 <p class="forceBreak"></p>
-```{r fig.align='right', out.width="100%"}
+```{r fig.align='right', out.width="75%"}
 knitr::include_graphics("gfx/tidyverse-logo.png")
 ```
 
@@ -135,9 +124,42 @@ knitr::include_graphics("gfx/tidyverse-logo.png")
 ## `tidyverse`
 
 
-```{r fig.align='right', out.width="100%"}
+```{r fig.align='center', out.width="90%"}
 knitr::include_graphics("gfx/tidyverse-package-workflow.png")
 ```
+
+
+## tidy data 
+
+```{r fig.align='center', out.width="90%"}
+knitr::include_graphics("gfx/tidy_1.png")
+```
+
+- Each variable must have its own column.
+- Each observation must have its own row.
+- Each value have its own cell.
+
+## tidy data 
+
+```{r fig.align='center', out.width="90%"}
+knitr::include_graphics("gfx/tidy_1.png")
+```
+
+
+Why?
+
+- Consistent data structure allows easier learning of related tools because they have similar underpinning principles.
+- Placing variables in columns takes advantage of R's vectorised nature.    
+
+
+## `tidyverse`: verbs
+
+- Must know: `read_csv`, `write_csv`, `glimpse`, `select`, `rename`, `filter`, `mutate`, `group_by` / `ungroup`, `summarise`, `pivot_wider` / `pivot_longer`, `_join`, `bind_rows` / `bind_cols`
+
+- Also important: `count`, `pull`, `slice`, `across`, `recode`, `unique`, `n()`, `where`, `everything()`, `~` and `.`, `map`, `starts_with`, `ends_with`, `contains`, `separate`, `unite`, `transmute`
+
+- There are a lot more but these are the most frequently used ones.
+
 
 ## tbls (tibble)
 
@@ -154,28 +176,34 @@ read_csv()
 
 ```
 
+- See exercise 1
 
-## tidy data 
+## Selection variables
 
-```{r fig.align='right', out.width="80%"}
-knitr::include_graphics("gfx/tidy_1.png")
-```
 
-- Each variable must have its own column.
-- Each observation must have its own row.
-- Each value have its own cell.
+- See exercise 2
 
-Why?
-- Consistent data structure allows easier learning of related tools because they have similar underpinning principles.
-- Placing variables in columns takes advantage of R's vectorised nature.    
+## Filtering data
 
-## `tidyverse`: verbs
+- See expercise 3
 
-- Must know: `read_csv`, `write_csv`, `glimpse`, `select`, `rename`, `filter`, `mutate`, `group_by` / `ungroup`, `summarise`, `pivot_wider` / `pivot_longer`, `_join`, `bind_rows` / `bind_cols`
+## Mutating data
 
-- Also important: `count`, `pull`, `slice`, `across`, `recode`, `unique`, `n()`, `where`, `everything()`, `~` + `.`, `map`, `starts_with`, `ends_with`, `contains`, `separate`, `unite`, `transmute`
+- See exercise 4
 
-- There are a lot more but these are fundamental.
+## Grouping data
+
+- See exercise 5 + 6
+
+## Pivoting data
+
+- See exercise 7
+
+## Combing data
+
+- See exercise 8
+
+
 
 ## The pipe: `%>%` {.columns-2}
 
@@ -191,7 +219,6 @@ data %>% select(myvar1, myvar2)
 *assumes first argument is data
 
 
-
 <p class="forceBreak"></p>
 
 ```{r fig.align='right', out.width="80%"}
@@ -199,45 +226,38 @@ knitr::include_graphics("gfx/pipe.png")
 ```
 
 
-## The pipe: `%>%` {.columns-3}
-
-Instead of 
+## The pipe: `%>%` {.columns-2}
 
 
 ```{r echo = T, eval = F}
+# Instead of 
 data_1 <- first_step(data)
-data_2 <- second_step(data)
-data_fin <- third_step(data)
-data_fin_v2 <- fourth_step(data)
-```
+data_2 <- second_step(data_2)
+data_3 <- third_step(data_3)
+data_4 <- fourth_step(data_4)
 
-
-<p class="forceBreak"></p>
-
-or
-
-```{r echo = T, eval = F}
-data_fin <- first_step(
-                  second_step(
-                    third_step(
-                      fourth_step(data)
-                    )
-                  )
-                )
+# or
+first_step(
+    second_step(
+        third_step(
+            fourth_step(data)
+            )
+          )
+        )
 ```
 
 <p class="forceBreak"></p>
 
-Just do
-
 ```{r echo = T, eval = F}
-data_fin <- data %>% 
+# Just do
+data %>% 
   first_step() %>%
   second_step() %>%
   third_step() %>%
   fourth_step()
 ```
 
+- See exercise 9
 
 
 ## Recommended reading {.columns-2}
